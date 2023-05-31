@@ -1,8 +1,13 @@
 package com.udacity.jdnd.course3.critter.schedule;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.udacity.jdnd.course3.critter.pet.Pet;
+import com.udacity.jdnd.course3.critter.user.Employee;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Handles web requests related to Schedules.
@@ -10,15 +15,31 @@ import java.util.List;
 @RestController
 @RequestMapping("/schedule")
 public class ScheduleController {
+    @Autowired
+    private ScheduleService scheduleService;
+    
+    private ScheduleDTO getScheduleDTO(Schedule schedule) {
+        ScheduleDTO scheduleDTO = new ScheduleDTO();
+        scheduleDTO.setActivities(schedule.getActivities());
+        scheduleDTO.setDate(schedule.getDate());
+        scheduleDTO.setId(schedule.getId());
+        scheduleDTO.setEmployeeIds(schedule.getEmployees().stream().map(Employee::getId).collect(Collectors.toList()));
+        scheduleDTO.setPetIds(schedule.getPets().stream().map(Pet::getId).collect(Collectors.toList()));
+        return scheduleDTO;
+    }
 
     @PostMapping
     public ScheduleDTO createSchedule(@RequestBody ScheduleDTO scheduleDTO) {
-        throw new UnsupportedOperationException();
+        Schedule schedule = new Schedule();
+        schedule.setDate(scheduleDTO.getDate());
+        schedule.setActivities(scheduleDTO.getActivities());
+        return getScheduleDTO(scheduleService.saveSchedule(schedule, scheduleDTO.getEmployeeIds(), scheduleDTO.getPetIds()));
     }
 
     @GetMapping
     public List<ScheduleDTO> getAllSchedules() {
-        throw new UnsupportedOperationException();
+        List<Schedule> schedules = scheduleService.getAllSchedules();
+        return schedules.stream().map(this::getScheduleDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/pet/{petId}")
