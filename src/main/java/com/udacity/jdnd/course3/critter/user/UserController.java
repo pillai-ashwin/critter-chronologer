@@ -23,6 +23,9 @@ public class UserController {
     @Autowired
     private CustomerService customerService;
 
+    @Autowired
+    private EmployeeService employeeService;
+
     private CustomerDTO getCustomerDTO(Customer customer){
         CustomerDTO customerDTO = new CustomerDTO();
         customerDTO.setId(customer.getId());
@@ -52,17 +55,31 @@ public class UserController {
 
     @GetMapping("/customer/pet/{petId}")
     public CustomerDTO getOwnerByPet(@PathVariable long petId){
-        throw new UnsupportedOperationException();
+        return getCustomerDTO(customerService.getCustomerByPetId(petId));
+    }
+
+    private EmployeeDTO getEmployeeDTO(Employee employee) {
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setDaysAvailable(employee.getAvailDay());
+        employeeDTO.setId(employee.getId());
+        employeeDTO.setName(employee.getName());
+        employeeDTO.setSkills(employee.getSkills());
+        return employeeDTO;
     }
 
     @PostMapping("/employee")
     public EmployeeDTO saveEmployee(@RequestBody EmployeeDTO employeeDTO) {
-        throw new UnsupportedOperationException();
+        Employee employee = new Employee();
+        employee.setName(employeeDTO.getName());
+        employee.setId(employeeDTO.getId());
+        employee.setAvailDay(employeeDTO.getDaysAvailable());
+        employee.setSkills(employeeDTO.getSkills());
+        return getEmployeeDTO(employeeService.saveEmployee(employee));
     }
 
     @PostMapping("/employee/{employeeId}")
     public EmployeeDTO getEmployee(@PathVariable long employeeId) {
-        throw new UnsupportedOperationException();
+        return getEmployeeDTO(employeeService.getEmployeeById(employeeId));
     }
 
     @PutMapping("/employee/{employeeId}")
