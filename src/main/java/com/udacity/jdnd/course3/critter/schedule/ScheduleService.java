@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.udacity.jdnd.course3.critter.pet.Pet;
 import com.udacity.jdnd.course3.critter.pet.PetRepository;
+import com.udacity.jdnd.course3.critter.user.Customer;
 import com.udacity.jdnd.course3.critter.user.CustomerRepository;
 import com.udacity.jdnd.course3.critter.user.Employee;
 import com.udacity.jdnd.course3.critter.user.EmployeeRepository;
@@ -38,5 +39,20 @@ public class ScheduleService {
 
     public List<Schedule> getAllSchedules() {
         return scheduleRepository.findAll();
+    }
+
+    public List<Schedule> getAllSchedulesForPet(Long petId) {
+        Pet pet = petRepository.getOne(petId);
+        return scheduleRepository.getAllByPetsContains(pet);
+    }
+
+    public List<Schedule> getAllSchedulesForEmployee(Long employeeId) {
+        Employee employee = employeeRepository.getOne(employeeId);
+        return scheduleRepository.getAllByEmployeesContains(employee);
+    }
+
+    public List<Schedule> getAllSchedulesForCustomer(Long customerId) {
+        Customer customer = customerRepository.getOne(customerId);
+        return scheduleRepository.getAllByPetsIn(customer.getPets());
     }
 }
